@@ -1,0 +1,8 @@
+node_modules/
+.next/
+out/
+pipeline/raw_items.json
+pipeline/new_items.json
+pipeline/written.json
+pipeline/articles_out/
+__pycache__/

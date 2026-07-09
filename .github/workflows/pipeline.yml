@@ -1,0 +1,57 @@
+name: GTA6 News Pipeline
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 min (GitHub may delay a few min)
+  workflow_dispatch: {}       # manual "Run workflow" button
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install deps
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Fetch sources
+        run: python pipeline/fetch.py
+
+      - name: Dedupe
+        run: python pipeline/dedupe.py
+
+      - name: Rewrite with LLM
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python pipeline/rewrite.py
+
+      - name: Publish + sitemap
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: python pipeline/publish.py
+
+      - name: Commit new articles
+        run: |
+          git config user.name "gta6-news-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add site/content/posts data/seen.json site/public/sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No new articles this run."
+          else
+            git commit -m "auto: publish $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git pull --rebase origin main
+            git push
+          fi
