@@ -19,7 +19,7 @@ from pathlib import Path
 
 import requests
 
-API_KEY = os.environ["GEMINI_API_KEY"]
+API_KEY = os.environ["AQ.Ab8RN6LoMyCnmmz7KuH6rnC9pMeZNYiEoyzRAEAq5swtBvcNzQ"]
 MODEL = "gemini-2.0-flash"
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent?key={API_KEY}"
 
