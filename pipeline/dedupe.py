@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 SEEN_PATH = ROOT / "data" / "seen.json"
 SIMILARITY_THRESHOLD = 0.55  # token-set Jaccard
-MAX_ARTICLES_PER_RUN = 6  # keep LLM usage inside free tier
+MAX_ARTICLES_PER_RUN = 1  # keep LLM usage inside free tier
 
 SYNONYMS = {
     "vi": "6", "grand": "", "theft": "", "auto": "gta",
